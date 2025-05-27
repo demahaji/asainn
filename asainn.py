@@ -83,10 +83,12 @@ for i in range(1, 21):
                 tracking_copy_text = "\n".join(tracking_ids).replace("\n", "\\n")
                 components.html(f"""
                     <div style='display: flex; align-items: center; gap: 5px;'>
-                        <button onclick=\"navigator.clipboard.writeText('{tracking_copy_text}')\">📋 Tracking</button>
-                        <button onclick=\"navigator.clipboard.writeText('{transport_id}')\">📋 Transporter</button>
+                        <button onclick="navigator.clipboard.writeText('{tracking_copy_text}')">📋 Tracking</button>
+                        <button onclick="navigator.clipboard.writeText('{transport_id}')">📋 Transporter</button>
                     </div>
                 """, height=40)
+            else:
+                st.write("")  # 何もないときも空行を置いて安定化
 
 # --- 実行ボタン ---
 st.markdown("---")
@@ -137,10 +139,10 @@ if st.session_state.get("results_by_course"):
     components.html(f"""
         <div style='display: flex; gap: 20px;'>
             <div>
-                <button onclick=\"navigator.clipboard.writeText('{tracking_copy_text}')\">📋 全Tracking IDをコピー</button>
+                <button onclick="navigator.clipboard.writeText('{tracking_copy_text}')">📋 全Tracking IDをコピー</button>
             </div>
             <div>
-                <button onclick=\"navigator.clipboard.writeText('{transport_copy_text}')\">📋 Transporter IDをコピー</button>
+                <button onclick="navigator.clipboard.writeText('{transport_copy_text}')">📋 Transporter IDをコピー</button>
             </div>
         </div>
     """, height=80)
