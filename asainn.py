@@ -37,19 +37,9 @@ if "selected_drivers" not in st.session_state:
 if "results_by_course" not in st.session_state:
     st.session_state["results_by_course"] = {}
 
-# --- 接頭辞選択 ---
+# --- 接頭辞セレクタ ---
 st.markdown("### 🏷️ コース接頭辞（全体共通）")
-prefix = ""
-col1, col2, col3 = st.columns(3)
-with col1:
-    if st.checkbox("CX", value=True):
-        prefix = "CX"
-with col2:
-    if st.checkbox("MX"):
-        prefix = "MX"
-with col3:
-    if st.checkbox("なし"):
-        prefix = ""
+prefix = st.selectbox("接頭辞を選択してください", options=["", "CX", "MX"], index=1)
 
 # --- 入力フォーム ---
 st.markdown("### 🔢 コース名（数字）とドライバー名（最大20名）")
