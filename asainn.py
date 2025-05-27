@@ -87,8 +87,6 @@ for i in range(1, 21):
                         <button onclick="navigator.clipboard.writeText('{transport_id}')">📋 Transporter</button>
                     </div>
                 """, height=40)
-            else:
-                st.write("")  # 何もないときも空行を置いて安定化
 
 # --- 実行ボタン ---
 st.markdown("---")
@@ -121,6 +119,28 @@ if st.button("🚀 実行開始"):
             st.warning("⚠️ 一致するコース名が見つかりませんでした。")
         else:
             st.success("✅ データ準備完了！")
+
+            # ここで即時に結果ボタンを表示
+            all_tracking_ids = []
+            all_transport_ids = set()
+
+            for result in results_by_course.values():
+                all_tracking_ids.extend(result["tracking_ids"])
+                all_transport_ids.add(result["transport_id"])
+
+            tracking_copy_text = "\n".join(all_tracking_ids).replace("\n", "\\n")
+            transport_copy_text = "\n".join(all_transport_ids).replace("\n", "\\n")
+
+            components.html(f"""
+                <div style='display: flex; gap: 20px;'>
+                    <div>
+                        <button onclick="navigator.clipboard.writeText('{tracking_copy_text}')">📋 全Tracking IDをコピー</button>
+                    </div>
+                    <div>
+                        <button onclick="navigator.clipboard.writeText('{transport_copy_text}')">📋 Transporter IDをコピー</button>
+                    </div>
+                </div>
+            """, height=80)
 
 # --- 結果表示（ボタン押下の外に分離） ---
 if st.session_state.get("results_by_course"):
