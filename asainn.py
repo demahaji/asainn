@@ -97,7 +97,6 @@ if st.button("🚀 実行開始"):
         st.error("⚠️ コース名とドライバー名を1件以上入力してください。")
     else:
         xls = pd.ExcelFile(uploaded_file)
-        execution_pairs = []
         results_by_course = {}
 
         for sheet_name in xls.sheet_names:
@@ -107,39 +106,41 @@ if st.button("🚀 実行開始"):
 
             for a in assignments:
                 if a["course"] == course_code:
-                    entry = {
+                    results_by_course[course_code] = {
                         "course": course_code,
                         "driver": a["driver"],
                         "transport_id": a["transport_id"],
                         "tracking_ids": tracking_ids
                     }
-                    results_by_course[course_code] = entry
-                    for tid in tracking_ids:
-                        execution_pairs.append({
-                            "tracking_id": tid,
-                            "driver_name": a["driver"],
-                            "transport_id": a["transport_id"]
-                        })
 
-        if not execution_pairs:
+        st.session_state["results_by_course"] = results_by_course
+
+        if not results_by_course:
             st.warning("⚠️ 一致するコース名が見つかりませんでした。")
         else:
             st.success("✅ データ準備完了！")
-            st.subheader("📋 コピー用データ（Tracking ID / Transporter ID）")
 
-            tracking_copy_text = "\n".join([item['tracking_id'] for item in execution_pairs]).replace("\n", "\\n")
-            unique_transport_ids = list({item['transport_id'] for item in execution_pairs})
-            transport_copy_text = "\n".join(unique_transport_ids).replace("\n", "\\n")
+# --- 結果表示（ボタン押下の外に分離） ---
+if st.session_state.get("results_by_course"):
+    st.subheader("📋 コピー用データ（Tracking ID / Transporter ID）")
 
-            components.html(f"""
-                <div style='display: flex; gap: 20px;'>
-                    <div>
-                        <button onclick=\"navigator.clipboard.writeText('{tracking_copy_text}')\">📋 全Tracking IDをコピー</button>
-                    </div>
-                    <div>
-                        <button onclick=\"navigator.clipboard.writeText('{transport_copy_text}')\">📋 Transporter IDをコピー</button>
-                    </div>
-                </div>
-            """, height=80)
+    all_tracking_ids = []
+    all_transport_ids = set()
 
-            st.session_state["results_by_course"] = results_by_course
+    for result in st.session_state["results_by_course"].values():
+        all_tracking_ids.extend(result["tracking_ids"])
+        all_transport_ids.add(result["transport_id"])
+
+    tracking_copy_text = "\n".join(all_tracking_ids).replace("\n", "\\n")
+    transport_copy_text = "\n".join(all_transport_ids).replace("\n", "\\n")
+
+    components.html(f"""
+        <div style='display: flex; gap: 20px;'>
+            <div>
+                <button onclick=\"navigator.clipboard.writeText('{tracking_copy_text}')\">📋 全Tracking IDをコピー</button>
+            </div>
+            <div>
+                <button onclick=\"navigator.clipboard.writeText('{transport_copy_text}')\">📋 Transporter IDをコピー</button>
+            </div>
+        </div>
+    """, height=80)
